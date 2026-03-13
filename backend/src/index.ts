@@ -133,6 +133,7 @@ const server = app.listen(PORT, () => {
  * - Stop accepting new requests
  * - Finish processing existing requests
  * - Close database connections
+ * - Close Redis connections
  * - Exit cleanly
  */
 async function gracefulShutdown(signal: string): Promise<void> {
@@ -144,6 +145,10 @@ async function gracefulShutdown(signal: string): Promise<void> {
     try {
       await db.end();
       logger.info('Database connections closed');
+
+      const { cache } = await import('./utils/cache');
+      await cache.disconnect();
+      logger.info('Redis connection closed');
 
       logger.info('Graceful shutdown complete');
       process.exit(0);
