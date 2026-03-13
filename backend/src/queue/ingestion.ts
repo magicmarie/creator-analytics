@@ -1,7 +1,9 @@
 import { Queue, Worker, Job } from 'bullmq';
+import { Pool } from 'pg';
 import { logger } from '../utils/logger';
 import { ingestYouTube } from '../ingestion/youtube';
 import { ingestGitHub } from '../ingestion/github';
+import { seedCampaigns } from '../db/seed-campaigns';
 import type { IngestionResult, Platform } from '../types';
 
 /**
@@ -82,6 +84,20 @@ export const ingestionWorker = new Worker(
       }
 
       logger.info({ count: output.length }, 'All platform ingestion completed');
+
+      // Auto-seed campaigns after first successful ingestion
+      const totalCreators = output.reduce((sum, r) => sum + r.creators_upserted, 0);
+      if (totalCreators > 0) {
+        const db = new Pool({ connectionString: process.env.DATABASE_URL });
+        try {
+          await seedCampaigns(db);
+        } catch (err) {
+          logger.warn({ error: err }, 'Campaign seeding failed (non-fatal)');
+        } finally {
+          await db.end();
+        }
+      }
+
       return output;
     }
 

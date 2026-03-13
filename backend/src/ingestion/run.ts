@@ -1,8 +1,10 @@
 import 'dotenv/config';
 import cron from 'node-cron';
+import { Pool } from 'pg';
 import { ingestYouTube } from './youtube';
 import { ingestGitHub } from './github';
 import { logger } from '../utils/logger';
+import { seedCampaigns } from '../db/seed-campaigns';
 import type { IngestionResult } from '../types';
 
 /**
@@ -55,6 +57,20 @@ export async function runIngestion(): Promise<IngestionResult[]> {
   }
 
   logger.info('[INGESTION] All platforms completed');
+
+  // Auto-seed campaigns after first ingestion (if creators exist)
+  const totalCreators = output.reduce((sum, r) => sum + r.creators_upserted, 0);
+  if (totalCreators > 0) {
+    const db = new Pool({ connectionString: process.env.DATABASE_URL });
+    try {
+      await seedCampaigns(db);
+    } catch (err) {
+      logger.warn({ error: err }, '[INGESTION] Campaign seeding failed (non-fatal)');
+    } finally {
+      await db.end();
+    }
+  }
+
   return output;
 }
 

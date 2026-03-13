@@ -62,10 +62,10 @@ docker-compose exec backend npm run migrate
 # 5. Seed tracked creators
 docker-compose exec backend npm run seed:tracked
 
-# 6. Trigger initial data ingestion (fetches real data from APIs)
+# 6. Trigger initial data ingestion (fetches real data and seeds campaigns)
 curl -X POST http://localhost:4000/api/v1/admin/ingest/trigger
-# Wait ~5 seconds for ingestion to complete, then check worker logs:
-# docker-compose logs worker --tail 20
+# Wait ~10 seconds for ingestion to complete, then check worker logs:
+# docker-compose logs worker --tail 30
 ```
 
 **Access the application:**
@@ -120,6 +120,7 @@ Tracked Creators → Job Queue → Worker → External APIs → Database → Cac
 3. Calculates engagement rates from likes, comments, views
 4. Stores time-series snapshots for historical tracking
 5. Caches results in Redis for fast API responses
+6. Auto-seeds sample campaigns (first run only) with ROI data linked to creators
 
 **Manual trigger:**
 ```bash
@@ -305,13 +306,14 @@ The modular design means most changes are isolated to the ingestion layer—no c
 - Docker multi-stage builds (optimized image size)
 - Hot reload in development mode
 
-## Next Steps (Given More Time)
+## Next Steps
 
 ### Immediate Priorities
 1. **Authentication & Authorization** - JWT-based auth, role-based access control
-2. **Webhook Ingestion** - Real-time updates from platforms instead of polling
-3. **Advanced Analytics** - Cohort analysis, predictive modeling, anomaly detection
-4. **Export Functionality** - CSV/PDF reports for stakeholders
+2. **Input Validation & Schema Validation** - Zod schemas for API request validation and external API response validation (YouTube/GitHub). Prevents bad data from users and catches breaking changes in external APIs before they corrupt the database.
+3. **Webhook Ingestion** - Real-time updates from platforms instead of polling
+4. **Advanced Analytics** - Cohort analysis, predictive modeling, anomaly detection
+5. **Export Functionality** - CSV/PDF reports for stakeholders
 
 ### Scalability Improvements
 5. **Horizontal Scaling** - Stateless API servers behind load balancer

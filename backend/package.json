@@ -11,8 +11,10 @@
     "start:worker": "node dist/worker.js",
     "migrate": "node dist/db/migrations.js",
     "seed:tracked": "node dist/db/seed-tracked-creators.js",
+    "seed:campaigns": "node dist/db/seed-campaigns.js",
     "migrate:dev": "ts-node src/db/migrations.ts",
     "seed:tracked:dev": "ts-node src/db/seed-tracked-creators.ts",
+    "seed:campaigns:dev": "ts-node src/db/seed-campaigns.ts",
     "ingest": "ts-node src/ingestion/run.ts",
     "typecheck": "tsc --noEmit"
   },
