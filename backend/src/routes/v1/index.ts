@@ -3,6 +3,7 @@ import creatorsRouter from './creators';
 import contentRouter from './content';
 import analyticsRouter from './analytics';
 import adminRouter from './admin';
+import campaignsRouter from './campaigns';
 
 /**
  * v1 API Router
@@ -16,5 +17,6 @@ router.use('/creators', creatorsRouter);
 router.use('/content', contentRouter);
 router.use('/analytics', analyticsRouter);
 router.use('/admin', adminRouter);
+router.use('/campaigns', campaignsRouter);
 
 export default router;
