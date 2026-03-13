@@ -9,8 +9,10 @@
     "build": "tsc",
     "start": "node dist/index.js",
     "start:worker": "node dist/worker.js",
-    "migrate": "ts-node src/db/migrations.ts",
-    "seed:tracked": "ts-node src/db/seed-tracked-creators.ts",
+    "migrate": "node dist/db/migrations.js",
+    "seed:tracked": "node dist/db/seed-tracked-creators.js",
+    "migrate:dev": "ts-node src/db/migrations.ts",
+    "seed:tracked:dev": "ts-node src/db/seed-tracked-creators.ts",
     "ingest": "ts-node src/ingestion/run.ts",
     "typecheck": "tsc --noEmit"
   },

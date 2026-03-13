@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { creatorsApi, campaignsApi, analyticsApi } from './lib/api';
 import type { Creator, Campaign, CampaignPerformance, PlatformStats, TopCreator } from './types';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 
 const PLATFORM_COLORS = {
   youtube: '#ef4444',
@@ -76,7 +76,6 @@ function App() {
 
   const totalContent = creators.reduce((sum, c) => sum + (c.latest_snapshot?.post_count || 0), 0);
   const activeCampaigns = campaigns.filter(c => c.status === 'active').length;
-  const avgEngagement = platformStats.reduce((sum, p) => sum + p.avg_engagement_rate, 0) / platformStats.length || 0;
 
   // Detect engagement drops (simplified - would need historical data)
   const engagementAlerts = creators.filter(c => {
