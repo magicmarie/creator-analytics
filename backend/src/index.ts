@@ -1,6 +1,6 @@
 import 'dotenv/config';
 import express from 'express';
-import cors from 'express';
+import cors from 'cors';
 import rateLimit from 'express-rate-limit';
 import { logger, requestLogger } from './utils/logger';
 import { db, testConnection } from './db/pool';
@@ -27,10 +27,10 @@ app.use(cors());
 app.use(express.json());
 app.use(requestLogger);
 
-// Rate limiting: 100 requests per 15 minutes per IP
+// Rate limiting: 1000 requests per 15 minutes per IP (increased for development)
 const limiter = rateLimit({
   windowMs: parseInt(process.env.API_RATE_WINDOW_MS || '900000'), // 15 minutes
-  max: parseInt(process.env.API_RATE_LIMIT || '100'),
+  max: parseInt(process.env.API_RATE_LIMIT || '1000'),
   standardHeaders: true,
   legacyHeaders: false,
   handler: (req, res) => {
