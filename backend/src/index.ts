@@ -1,9 +1,10 @@
 import 'dotenv/config';
 import express from 'express';
-import cors from 'cors';
+import cors from 'express';
 import rateLimit from 'express-rate-limit';
 import { logger, requestLogger } from './utils/logger';
 import { db, testConnection } from './db/pool';
+import { startScheduler } from './ingestion/run';
 
 /**
  * CreatorScope API Server
@@ -124,6 +125,9 @@ const server = app.listen(PORT, () => {
     },
     'Server started'
   );
+
+  // Start automated ingestion scheduler (runs every 12 hours)
+  startScheduler();
 });
 
 // ─── Graceful Shutdown ────────────────────────────────────────────────────────

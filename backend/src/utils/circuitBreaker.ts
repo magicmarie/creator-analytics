@@ -70,7 +70,7 @@ export function createCircuitBreaker<T extends (...args: any[]) => Promise<any>>
   });
 
   // Event: Request succeeded
-  breaker.on('success', (result) => {
+  breaker.on('success', () => {
     logger.debug({ breaker: name }, 'Circuit breaker request succeeded');
   });
 
@@ -89,7 +89,7 @@ export function createCircuitBreaker<T extends (...args: any[]) => Promise<any>>
     logger.warn({ breaker: name }, 'Circuit breaker rejected request (circuit is open)');
   });
 
-  return breaker;
+  return breaker as CircuitBreaker<Parameters<T>, ReturnType<T>>;
 }
 
 /**
