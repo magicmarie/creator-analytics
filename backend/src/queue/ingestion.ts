@@ -1,5 +1,4 @@
 import { Queue, Worker, Job } from 'bullmq';
-import redis from '../utils/cache';
 import { logger } from '../utils/logger';
 import { ingestYouTube } from '../ingestion/youtube';
 import { ingestGitHub } from '../ingestion/github';
@@ -16,10 +15,19 @@ import type { IngestionResult, Platform } from '../types';
  */
 
 /**
+ * Redis connection options for BullMQ
+ */
+const redisConnection = {
+  host: process.env.REDIS_HOST || 'localhost',
+  port: parseInt(process.env.REDIS_PORT || '6379', 10),
+  maxRetriesPerRequest: null, // BullMQ recommendation
+};
+
+/**
  * Ingestion queue configuration
  */
 export const ingestionQueue = new Queue('platform-ingestion', {
-  connection: redis.getClient(),
+  connection: redisConnection,
   defaultJobOptions: {
     attempts: 3, // Retry failed jobs up to 3 times
     backoff: {
@@ -49,6 +57,9 @@ const platformIngestors: Record<Platform, () => Promise<IngestionResult>> = {
 /**
  * Background worker for processing ingestion jobs
  * Runs in a separate process (worker.ts)
+ */
+/**
+ * Background worker for processing ingestion jobs
  */
 export const ingestionWorker = new Worker(
   'platform-ingestion',
@@ -91,7 +102,7 @@ export const ingestionWorker = new Worker(
     throw new Error(`Unknown job name: ${job.name}`);
   },
   {
-    connection: redis.getClient(),
+    connection: redisConnection,
     concurrency: 2, // Process 2 jobs simultaneously
   }
 );

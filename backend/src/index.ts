@@ -5,6 +5,7 @@ import rateLimit from 'express-rate-limit';
 import { logger, requestLogger } from './utils/logger';
 import { db, testConnection } from './db/pool';
 import { startScheduler } from './ingestion/run';
+import v1Router from './routes/v1';
 
 /**
  * CreatorScope API Server
@@ -86,12 +87,13 @@ app.get('/', (_req, res) => {
     version: '1.0.0',
     endpoints: {
       health: '/health',
-      api: '/v1',
+      api: '/api/v1',
     },
   });
 });
 
-// Routes will be added here
+// Mount v1 API routes
+app.use('/api/v1', v1Router);
 
 /**
  * 404 handler
